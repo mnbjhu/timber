@@ -1,0 +1,12 @@
+{"time":"2023-10-04T22:04:51.289872609+01:00","level":"INFO","prefix":"-","file":"main.go","line":"14","message":"1 Hello World"}
+{"time":"2023-10-04T22:04:52.290136813+01:00","level":"ERROR","prefix":"-","file":"main.go","line":"17","message":"2 Hello World"}
+{"time":"2023-10-04T22:04:54.29040747+01:00","level":"INFO","prefix":"-","file":"main.go","line":"14","message":"3 Hello World"}
+{"time":"2023-10-04T22:04:55.289995208+01:00","level":"ERROR","prefix":"-","file":"main.go","line":"17","message":"4 Hello World"}
+{"time":"2023-10-04T22:04:57.290308785+01:00","level":"INFO","prefix":"-","file":"main.go","line":"14","message":"5 Hello World"}
+{"time":"2023-10-04T22:04:58.290493661+01:00","level":"ERROR","prefix":"-","file":"main.go","line":"17","message":"6 Hello World"}
+{"time":"2023-10-04T22:05:00.290782071+01:00","level":"INFO","prefix":"-","file":"main.go","line":"14","message":"7 Hello World"}
+{"time":"2023-10-04T22:05:01.290952139+01:00","level":"ERROR","prefix":"-","file":"main.go","line":"17","message":"8 Hello World"}
+{"time":"2023-10-04T22:05:03.291252641+01:00","level":"INFO","prefix":"-","file":"main.go","line":"14","message":"9 Hello World"}
+{"time":"2023-10-04T22:05:04.291443308+01:00","level":"ERROR","prefix":"-","file":"main.go","line":"17","message":"10 Hello World"}
+{"time":"2023-10-04T22:05:06.29170635+01:00","level":"INFO","prefix":"-","file":"main.go","line":"14","message":"11 Hello World"}
+{"time":"2023-10-04T22:05:07.291882811+01:00","level":"ERROR","prefix":"-","file":"main.go","line":"17","message":"12 Hello World"}
