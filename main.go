@@ -4,23 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	m "github.com/mnbjhu/timber/model"
-)
-
-var (
-	rows    = []table.Row{}
-	updated = false
+	"github.com/mnbjhu/timber/model"
 )
 
 var baseStyle = lipgloss.NewStyle().
 	BorderStyle(lipgloss.NormalBorder()).
 	BorderForeground(lipgloss.Color("240"))
 
-type model struct {
+type LogsModel struct {
 	table table.Model
 	sub   chan AddLog
 }
@@ -29,7 +25,7 @@ func listenForActivity(sub chan AddLog) tea.Cmd {
 	decoder := json.NewDecoder(os.Stdin)
 	return func() tea.Msg {
 		for {
-			var obj m.LogMessage
+			var obj model.LogMessage
 			decoder.Decode(&obj)
 			sub <- AddLog{Log: obj}
 		}
@@ -44,23 +40,31 @@ func waitForActivity(sub chan AddLog) tea.Cmd {
 }
 
 type AddLog struct {
-	Log m.LogMessage
+	Log model.LogMessage
 }
 
-func (m model) Init() tea.Cmd {
+func (m LogsModel) Init() tea.Cmd {
 	return tea.Batch(
 		listenForActivity(m.sub),
 		waitForActivity(m.sub),
 	)
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m LogsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case AddLog:
+		dateTime, _ := time.Parse(time.RFC3339, msg.Log.Time)
+		msg.Log.Time = dateTime.Format("15:04:05")
 		rows := append(m.table.Rows(), table.Row{msg.Log.Time, msg.Log.Level, msg.Log.Prefix, msg.Log.File, msg.Log.Line, msg.Log.Message})
-		m.table.GotoBottom()
+		goToBottom := false
+		if m.table.Cursor() == len(m.table.Rows())-1 {
+			goToBottom = true
+		}
 		m.table.SetRows(rows)
+		if goToBottom {
+			m.table.GotoBottom()
+		}
 		return m, waitForActivity(m.sub)
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -82,7 +86,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m model) View() string {
+func (m LogsModel) View() string {
 	return baseStyle.Render(m.table.View()) + "\n"
 }
 
@@ -98,7 +102,7 @@ func main() {
 
 	t := table.New(
 		table.WithColumns(columns),
-		table.WithRows(rows),
+		table.WithRows([]table.Row{}),
 		table.WithFocused(true),
 		table.WithHeight(7),
 	)
@@ -113,7 +117,7 @@ func main() {
 		Background(lipgloss.Color("57")).
 		Bold(false)
 	t.SetStyles(s)
-	m := model{
+	m := LogsModel{
 		table: t,
 		sub:   make(chan AddLog),
 	}
@@ -124,11 +128,11 @@ func main() {
 	}
 }
 
-func readLog(rows *[]table.Row, t *model) {
+func readLog(rows *[]table.Row, t *LogsModel) {
 	decoder := json.NewDecoder(os.Stdin)
 
 	for {
-		var obj m.LogMessage
+		var obj model.LogMessage
 		err := decoder.Decode(&obj)
 		if err != nil {
 			// If we've reached the end of input or encountered an error, break the loop
